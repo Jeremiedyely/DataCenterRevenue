@@ -260,8 +260,8 @@ RAW_DIR = r"C:\Users\jerem\project\DataCenterRevenue\raw"
 files_to_tables = {
     "dim_customer.csv": ("curated", "dim_customer"),
     "dim_contract.csv": ("curated", "dim_contract"),
-    "fact_meter_power_daily.csv": ("raw", "fact_meter_power_daily"), #large data uploaded through BULK INSERT from folder 
-    "fact_rack_utilization_daily.csv": ("raw", "fact_rack_utilization_daily"), #large data uploaded through BULK INSERT from folder 
+    "fact_meter_power_daily.csv": ("raw", "fact_meter_power_daily"), #large data uploaded in SQL through BULK INSERT from folder 
+    "fact_rack_utilization_daily.csv": ("raw", "fact_rack_utilization_daily"), #large data uploaded in SQL through BULK INSERT from folder 
     "fact_invoice_line.csv": ("raw", "fact_invoice_line"),
     "fact_power_cost_monthly.csv": ("raw", "fact_power_cost_monthly"), 
 }
