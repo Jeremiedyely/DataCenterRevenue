@@ -1,7 +1,7 @@
--- Control & Data integrity (the view + the exception tables� that Power BI reads)
+-- Control & Data integrity (the view + the exception tablesthat Power BI reads)
 
 -- main controls view (Power BI page source).  
--- single, clean table for the �Controls & Data integrity� page.
+-- single, clean table for the Controls & Data integrity page.
 CREATE OR ALTER VIEW recon.v_controls_data_integrity AS
 SELECT
     month,
@@ -43,7 +43,7 @@ SELECT
 FROM mart.mart_contract_monthly mc;
 GO
 
--- create �variance reason� classification at contract month level
+-- create "variance reason classification at contract month level
 -- same idea as variance_bucket but at the contract-month detail so you can show counts by reason.
 CREATE OR ALTER VIEW recon.v_contract_exception_reason AS
 SELECT
@@ -59,7 +59,7 @@ SELECT
 FROM mart.mart_contract_monthly;
 GO
 
--- create an �exceptions only� view (for dashboards)
+-- create an exceptions onlyview (for dashboards)
 -- Power BI can show only the contracts that need attention.
 CREATE OR ALTER VIEW recon.v_contract_exceptions_only AS
 SELECT
@@ -70,7 +70,7 @@ WHERE mc.late_reading_days > 0
    OR mc.true_up_flag = 1;
 GO
 
--- create a �Controls Summary� view (executive-friendly)
+-- create a "Controls Summary" view (executive-friendly)
 -- One row per month with counts of exceptions + risk intensity.
 CREATE OR ALTER VIEW recon.v_controls_summary AS
 SELECT

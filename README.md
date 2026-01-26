@@ -1,6 +1,11 @@
 Revenue-Critical Data Ownership System for Data Center Operations. Reduce risk and protect margin while ensuring data integrity. 
 Objective: This project models how data center revenue and margin are actually created, stressed, and protected by explicitly tying together:
-Contracts → Contract Versions → Racks → Usage → Energy → Margin
+Contracts - Contract Versions - Racks - Usage - Energy - Margin
+
+MOST OF MY SCRIPTS ARE AVAILABLE EXCEPTS: 
+1. Mart Folder:  finance_close_recon (contains close simulation + cutoff logic + late posting smulation). It exposes how I simulated late ERP positing, recognized month rules (cutoff day logic), the "as-of close" revenue view logic. which is reusable.
+2. Staging Folder: Staging (make raw data safe and joinable - clean, validated, and consisten grain)
+3. Recon Folder: Reconciliation_erp_vs_mart_monthly ( it proves my dashboard numbers are real by reconciling erp truth to my modeled mart truth. month by month). It answers Do my dashboard totals tie to the ERP and explain variance.
 
 The goal is not reporting for reporting’s sake, but revenue integrity, ensuring financial outputs remain aligned with physical infrastructure, contractual commitments, and variable energy costs as they exist in reality.
 
@@ -155,3 +160,4 @@ Late data, Amendments, Usage volatility
 
 
 This project is designed to reflect how finance actually operates inside infrastructure-heavy businesses, where contracts promise revenue, but physics determines margin.
+
