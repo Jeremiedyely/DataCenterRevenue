@@ -1,4 +1,8 @@
-Preventing Revenue Drift to Protect Data Center Margins - Revenue Control System Data Flow ownership
+⚠️ Note "Some of the table/view scripts are not included in this repository folder.  
+The underlying logic can still be reused and recreated from the documentation in this project.  
+Certain implementation details were intentionally not published to keep the repository focused on the system architecture and core logic.
+
+Ptoject : Preventing Revenue Drift to Protect Data Center Margins - Revenue Control System Data Flow ownership
 
 This system enforces a single critical rule:
 
@@ -8,7 +12,7 @@ financial reporting
 
 If the two diverge, the system detects and explains the variance.
 
-Problem the System Solves
+• Problem the System Solves:
 
 In data centers, revenue depends on several layers staying aligned.
 Contracts
@@ -40,7 +44,7 @@ Consequences:
 
 This system prevents revenue drift.
 
-Purpose of the System
+• Purpose of the System:
 
 The purpose is to enforce alignment between:
 
@@ -156,63 +160,35 @@ These controls detect:
 	•	negative margin conditions
 This layer functions as the finance safety system.
 
-System Flow
-
-End-to-end pipeline:
-
-Contracts
-      ↓
-Meter Readings
-      ↓
-Rack Usage
-      ↓
-Energy Cost Inputs
-      ↓
-ERP Invoices
-      ↓
-SQL Transformations
-      ↓
-Revenue Model
-      ↓
-Margin Calculation
-      ↓
-ERP vs Model Reconciliation
-      ↓
-Controls Dashboard
-      ↓
-Finance Decision Making
-
 
 System Inputs:
 
-The system ingests four categories of data.
+The system ingests four categories of data;
 
-Contract Data - Defines customer entitlement:
+• Contract Data - Defines customer entitlement:
 
 contract_id
 racks_entitled
 power_commit_kw
 price_per_kw
 
-Usage Data - Measures infrastructure consumption:
+• Usage Data - Measures infrastructure consumption:
 
 meter readings
 rack utilization
 
-ERP Billing Data - Represents financial transactions:
+• ERP Billing Data - Represents financial transactions:
 
 invoice lines
 credits
 overages
 
-Cost Data: Represents operating costs:
+• Cost Data: Represents operating costs:
 power cost
 allocation logic
 
-System Processes
-
+System Processes: 
 The system performs several key transformations.
-
 
 Usage Aggregation:
 daily meter readings
@@ -247,9 +223,9 @@ variance_amount
 variance_pct
 control_status
 
-System Outputs
+System Outputs: 
 
-The system produces two categories of outputs.
+The system produces two categories of outputs:
 
 Operational Insights
 
@@ -282,6 +258,4 @@ financial reporting
 
 If the two diverge, the system detects and explains the variance.
 
-This project is not simply a dashboard.
-
-It is a Revenue Integrity System.
+This project is not simply a dashboard. It is a Revenue Integrity System.
