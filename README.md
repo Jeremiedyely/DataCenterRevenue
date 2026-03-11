@@ -2,7 +2,7 @@
 The underlying logic can still be reused and recreated from the documentation in this project.  
 Certain implementation details were intentionally not published to keep the repository focused on the system architecture and core logic.
 
-Ptoject : Preventing Revenue Drift to Protect Data Center Margins - Revenue Control System Data Flow ownership
+Project : Preventing Revenue Drift to Protect Data Center Margins - Revenue Control System Data Flow ownership
 
 This system enforces a single critical rule:
 
