@@ -1,159 +1,287 @@
-Revenue-Critical Data Ownership System for Data Center Operations. Reduce risk and protect margin while ensuring data integrity. 
-Objective: This project models how data center revenue and margin are actually created, stressed, and protected by explicitly tying together:
-Contracts - Contract Versions - Racks - Usage - Energy - Margin
+Preventing Revenue Drift to Protect Data Center Margins - Revenue Control System Data Flow ownership
 
-The goal is not reporting for reporting’s sake, but revenue integrity, ensuring financial outputs remain aligned with physical infrastructure, contractual commitments, and variable energy costs as they exist in reality.
+This system enforces a single critical rule:
 
-Questions This System Answers
+Infrastructure reality
+must equal
+financial reporting
 
-1. Where revenue is born
-Contracts and estimator assumptions
+If the two diverge, the system detects and explains the variance.
 
-2. Where revenue breaks
-ERP configuration gaps and usage volatility
+Problem the System Solves
 
-3. Why dashboards fail
-Structural commitments (contracts, racks) drifting from behavioral reality (usage) without controls
+In data centers, revenue depends on several layers staying aligned.
+Contracts
+    ↓
+Infrastructure capacity
+    ↓
+Power usage
+    ↓
+Energy costs
+    ↓
+ERP billing
+    ↓
+Financial reporting
 
-Why This Project Exists
-In infrastructure businesses, dashboards often lose trust because they:
+If any layer drifts, problems occur.
 
-Do not reconcile to ERP
-Hide assumptions
-Fail silently when data changes
-Smooth or average highly variable costs like energy
+Examples:
+	•	Contract amendments not reflected in billing
+	•	Usage spikes not captured in invoices
+	•	Late meter readings
+	•	ERP configuration errors
+	•	Incorrect energy cost allocation
 
-This project demonstrates how to design a source-of-truth financial data model with explicit controls, so finance teams can:
+Consequences:
+	•	Customer overbilling
+	•	Revenue leakage
+	•	Margin distortion
+	•	Financial close surprises
 
-Trust what they see
-Understand why numbers move
-Distinguish timing issues from real financial risk
+This system prevents revenue drift.
 
-Business Model: How Data Center Revenue Actually Works
-Revenue (Predictable)
+Purpose of the System
 
-Created by contractual structure
-Driven by: 
-    - Rack entitlements
-    - Reserved power (kW)
-    - Pricing rules
+The purpose is to enforce alignment between:
 
-Enforced through ERP invoices
-Forms MRR (Monthly Recurring Revenue)
+PHYSICS
+(power usage, racks, infrastructure)
 
-Cost (Volatile)
-Driven primarily by energy
-Energy cost reacts to usage behavior, not contract price
-Usage volatility can erode margin if not structurally constrained
+and
 
-Core risk:
-Revenue is fixed by contracts, but margin is exposed to usage-driven energy volatility.
-This system exists to make that exposure visible, explainable, and controllable.
+FINANCE
+(invoices, revenue, margin)
 
-Architecture: End-to-End Ownership
-Design Principles
-Explicit business rules
-Clear data grain
-Auditability over convenience
+The system ensures:
+	•	Revenue is explainable
+	•	Margins are measurable
+	•	Errors are detectable
+	•	Finance can trust reported numbers
 
-Layered Design
-Raw – Immutable inputs
-Curated – Validated & controlled
-Mart – Business truth
-Presentation – Decision-making & controls
+The architecture follows several core principles.
 
-Data Layers
-Raw (Immutable Inputs)
-Represents system-of-record truth:
+Rule 1 — Physics Cannot Be Overridden
+Energy consumption is real.
+Contracts and ERP systems cannot override infrastructure reality.
+Power usage → drives cost
 
-Meter readings (usage signals)
-ERP invoices (financial enforcement)
-Contracts (structure & entitlements)
-Power cost feeds (variable cost input)
+Rule 2 — Structure Controls Behavior
+Contracts define the structural limits of usage.
+contract → racks → power_commit_kw
 
-Curated (Validated & Staged)
-This layer:
-Cleans joins and keys
-Handles late or missing data
-Flags exceptions
-Preserves auditability
-Key features
-Contract versioning for amendments
-Late / estimated meter flags
-Standardized customer and contract keys
+Rule 3 — Grain Defines Truth
+Every dataset must have a clearly defined grain.
 
-Mart (Business Truth)
-Answers finance questions, not technical ones.
+Example: 
+meter readings = daily per contract
+invoices = monthly per contract
+reporting = monthly per contract
+Without grain control, data becomes unreliable.
 
-Primary reporting table
-Reporting grain:
-      - Monthly by customer + contract
+Rule 4 — Reconciliation Builds Trust
+Finance only trusts numbers that reconcile.
+ERP totals
+vs
+Model totals
+Variance must always be explainable.
 
-Includes:
-Contracted racks and power
-Used vs reserved power
-Rack utilization
-Allocated energy cost
-Revenue
-Margin
-Risk-Weighted Metrics
+Rule 5 — Assumptions Must Be Visible
+Revenue systems rely on assumptions.
 
-Each metric is paired with assumptions, validation logic, and reconciliation checks.
+Examples:
+	•	power allocation logic
+	•	revenue timing
+	•	margin calculation rules
 
-Metric	                      Risk if Wrong
-Contracted vs Used Power      Overbilling / customer disputes
-Rack Utilization	      Capacity planning failure
-MRR	                      Revenue misstatement
-Customer Expansion	      False growth narrative
-Power Cost Allocation	      Margin distortion
-Margin by Customer	      Strategic pricing errors
+All assumptions must be documented.
 
-Reconciliation & Controls (Trust Layer)
-The goal is not just accuracy  it is trust.
+The architecture consists of four layers.
+RAW
+↓
+CURATED
+↓
+MART
+↓
+CONTROLS & PRESENTATION
 
-Implemented via SQL and a dedicated Power BI “Controls & Data Integrity” page, including:
+Layer 1 — Raw Data (Immutable)
+Purpose:Capture source events exactly as they occur.
+Raw data represents operational reality:
+	•	contracts
+	•	infrastructure usage
+	•	invoices
+	•	energy costs
 
-ERP totals vs Allocated Power totals
-Variance percentage thresholds
-Root-cause categorization (timing, mapping, missing/late data)
-Reprocessing timestamp
-Simulated sign-off status
+Layer 2 — Curated Layer
+Purpose:Clean and standardize raw data for consistent analysis.
+Tasks performed:
+	•	remove duplicates
+	•	normalize contract versions
+	•	handle late data
+	•	aggregate daily → monthly
 
-This mirrors how finance teams evaluate data reliability.
+Layer 3 — Mart Layer
+Purpose:Build the analytical business model.
+Primary table:mart_contract_monthly
+Grain: contract_id, contract_version, month
+Metrics: 
 
-Grain Design (Why Dashboards Fail Without This)
-Defined explicitly:
+total_kw
+avg_daily_kw
+peak_kw
+avg_racks_used
 
-Contract grain: one row per contract version
-Meter grain: daily per contract
-Rack utilization grain: daily per contract
-Invoice grain: monthly per contract
-Power cost grain: monthly per site (then allocated)
+erp_revenue_total
+allocated_power_cost
+gross_margin
 
-These grains answer the question:
-"Which contracts, racks, and customers are profitable and which usage patterns are eroding margin through energy?"
+late_reading_days
+estimated_days
 
-Tools
-SQL Server: transformations, business logic, reconciliation
-Python: synthetic data generation and ingestion
-Power BI: executive dashboards and controls
+This represents the financial model of operations.
 
-Outputs
-Python: Generated raw datasets simulating real world failures:
-Late data, Amendments, Usage volatility
-SQL Server: Source-of-truth transformations, Allocation logic, Reconciliation and controls
-Power BI: Revenue & Margin Overview and Revenue Controls & Reconciliation
+Layer 4 — Controls Layer
+Purpose:Ensure financial integrity and detect anomalies.
+Tables / Views:
+recon_erp_vs_mart_monthly
+v_controls_data_integrity
+v_controls_summary
+v_contract_exceptions_only
 
-Answers: 
-"What did the company sell? Total Revenue"
-"How stable is revenue? MRR"
-"What did physics cost us? Allocated Power Cost"
-"Are we actually making money? Gross Margin"
+These controls detect:
+	•	revenue variance
+	•	late meter readings
+	•	estimated data usage
+	•	contract amendments
+	•	negative margin conditions
+This layer functions as the finance safety system.
 
-This project is designed to reflect how finance actually operates inside infrastructure-heavy businesses, where contracts promise revenue, but physics determines margin.
+System Flow
 
-MOST OF MY SCRIPTS ARE AVAILABLE EXCEPTS: 
-1. Mart Folder:  finance_close_recon (contains close simulation + cutoff logic + late posting smulation). It exposes how I simulated late ERP positing, recognized month rules (cutoff day logic), the "as-of close" revenue view logic. which is reusable.
-2. Staging Folder: Staging (make raw data safe and joinable - clean, validated, and consisten grain)
-3. Recon Folder: Reconciliation_erp_vs_mart_monthly ( it proves my dashboard numbers are real by reconciling erp truth to my modeled mart truth. month by month). It answers Do my dashboard totals tie to the ERP and explain variance.
+End-to-end pipeline:
 
+Contracts
+      ↓
+Meter Readings
+      ↓
+Rack Usage
+      ↓
+Energy Cost Inputs
+      ↓
+ERP Invoices
+      ↓
+SQL Transformations
+      ↓
+Revenue Model
+      ↓
+Margin Calculation
+      ↓
+ERP vs Model Reconciliation
+      ↓
+Controls Dashboard
+      ↓
+Finance Decision Making
+
+
+System Inputs:
+
+The system ingests four categories of data.
+
+Contract Data - Defines customer entitlement:
+
+contract_id
+racks_entitled
+power_commit_kw
+price_per_kw
+
+Usage Data - Measures infrastructure consumption:
+
+meter readings
+rack utilization
+
+ERP Billing Data - Represents financial transactions:
+
+invoice lines
+credits
+overages
+
+Cost Data: Represents operating costs:
+power cost
+allocation logic
+
+System Processes
+
+The system performs several key transformations.
+
+
+Usage Aggregation:
+daily meter readings
+→ monthly usage metrics
+
+Calculated metrics:
+total_kw
+avg_daily_kw
+peak_kw
+
+Revenue Modeling - From ERP invoices:
+recurring revenue
+overage revenue
+credits
+
+Aggregated to monthly totals.
+
+Power Cost Allocation:
+Energy cost is allocated proportionally.
+Example formula: gross_margin = revenue − allocated_power_cost
+
+Margin Calculation: 
+gross_margin = revenue − allocated_power_cost
+
+Reconciliation - Compare two systems:
+ERP revenue
+vs
+modeled revenue
+
+Outputs:
+variance_amount
+variance_pct
+control_status
+
+System Outputs
+
+The system produces two categories of outputs.
+
+Operational Insights
+
+Executive dashboard metrics:
+	•	revenue trends
+	•	margin trends
+	•	contract utilization
+	•	power usage patterns
+
+
+Financial Controls
+
+Controls dashboard provides:
+	•	ERP vs model variance
+	•	late data alerts
+	•	contract amendment true-ups
+	•	negative margin detection
+
+These outputs support:
+
+Finance
+Operations
+Executives
+Revenue assurance
+
+This system enforces a single critical rule: 
+Infrastructure reality
+must equal
+financial reporting
+
+If the two diverge, the system detects and explains the variance.
+
+This project is not simply a dashboard.
+
+It is a Revenue Integrity System.
